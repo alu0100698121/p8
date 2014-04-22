@@ -1,7 +1,11 @@
 /* description: Parses end executes mathematical expressions. */
 
 %{
-var symbol_table = {};
+var symbol_table = {
+   constantes: [],
+   variables: [],
+   procedures: []
+};
 
 %}
 
@@ -58,6 +62,71 @@ procedure
                 block: $7
                 }];
 
+           var tabla_proc = {
+		id: $2,
+		n_par: $4.length,
+		constantes: [],
+                variables: []
+           };
+           
+           if($7[0][0].type == "CONST") {
+              var i = 1;
+	      var con = [{
+                 type: "CONST",
+                 id: $7[0][0].left,
+                 value: $7[0][0].right
+              }];
+	      while (i < $7[0].length) {
+                var aux = {
+                  type: "CONST",
+                  id: $7[0][i].left,
+                  value: $7[0][i].right
+                };
+                con.push(aux);
+                i = i + 1
+              };
+	      tabla_proc.constantes = con;
+	      
+              console.log($7[1][0].type);
+              if ($7[1][0].type == "VAR"){
+              	var i = 1;
+	      	var vari = [{
+                   type: "VAR",
+                   id: $7[1][0].right
+                }];
+	        while (i < $7[1].length) {
+                  var aux = {
+                    type: "VAR",
+                    id: $7[1][i].right,
+                  };
+                  vari.push(aux);
+                  i = i + 1
+                };
+
+                tabla_proc.variables = vari;
+              };
+           }
+           else if ($7[0][0].type == "VAR") {
+              	var i = 1;
+	      	var vari = [{
+                   type: "VAR",
+                   id: $7[1][0].right
+                }];
+	        while (i < $7[1].length) {
+                  var aux = {
+                    type: "VAR",
+                    id: $7[1][i].right,
+                  };
+                  vari.push(aux);
+                  i = i + 1
+                };
+                
+                tabla_proc.variables = vari;
+           };
+
+
+           symbol_table.procedures.push(tabla_proc);
+           console.log(symbol_table);
 		if ($10) { $$.concat($10);};
          }
      |/*vacio*/
