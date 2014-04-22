@@ -1,16 +1,18 @@
-#Analizador de PL0 Usando Jison
+#Analizador de ámbito de PL0
 
-![Icon](http://velneo.es/files/2012/10/logo-js.png)
+![Icon](http://upload.wikimedia.org/wikipedia/commons/3/37/Pl_logo5.gif)
 
 Este analizador trata de parsear con la gramática [PL/0][PL0].
 
 Una vez introducido un programa (véase la sintaxis y la gramática que acepta [aquí][grammar]) el programa produce un árbol recursivo descendente.
 
+Se almacenan en una tabla los valores de las variables, constantes, parámetros, etc.
+
 También se incluye en la página un enlace a tests que prueban la completa funcionalidad de la página.
 
 ####Enlace a la web
 
-[http://gentle-gorge-3583.herokuapp.com/][page]
+En desarrollo...
 
 ####Autores
 
