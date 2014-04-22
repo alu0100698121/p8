@@ -82,9 +82,69 @@ performAction: function anonymous(yytext, yyleng, yylineno, yy, yystate /* actio
 
 var $0 = $$.length - 1;
 switch (yystate) {
-case 1: 
-          this.$ = $$[$0-1]; 
+case 1:
+          this.$ = $$[$0-1];
+          console.log("Bloque:");
+          console.log($$[$0-1]);
+          if ($$[$0-1][0] != undefined) {
+           if($$[$0-1][0][0].type == "CONST") {
+              var i = 1;
+	      var con = [{
+                 type: "CONST",
+                 id: $$[$0-1][0][0].left,
+                 value: $$[$0-1][0][0].right
+              }];
+	      while (i < $$[$0-1][0].length) {
+                var aux = {
+                  type: "CONST",
+                  id: $$[$0-1][0][i].left,
+                  value: $$[$0-1][0][i].right
+                };
+                con.push(aux);
+                i = i + 1
+              };
+	      symbol_table.constantes = con;
+	      
+              if ($$[$0-1][1][0].type == "VAR"){
+              	var i = 1;
+	      	var vari = [{
+                   type: "VAR",
+                   id: $$[$0-1][1][0].right
+                }];
+	        while (i < $$[$0-1][1].length) {
+                  var aux = {
+                    type: "VAR",
+                    id: $$[$0-1][1][i].right,
+                  };
+                  vari.push(aux);
+                  i = i + 1
+                };
+
+                symbol_table.variables = vari;
+              };
+           }
+           else if ($$[$0-1][0][0].type == "VAR") {
+              	var i = 1;
+	      	var vari = [{
+                   type: "VAR",
+                   id: $$[$0-1][0][0].right
+                }];
+	        while (i < $$[$0-1][0].length) {
+                  var aux = {
+                    type: "VAR",
+                    id: $$[$0-1][0][i].right,
+                  };
+                  vari.push(aux);
+                  i = i + 1
+                };
+                
+                symbol_table.variables = vari;
+           };
+          
+          }
           console.log(this.$);
+          console.log("Symbol table:");
+          console.log(symbol_table);
           return [this.$, symbol_table];
         
 break;
@@ -107,9 +167,12 @@ case 3: this.$ = [{
 		id: $$[$0-8],
 		n_par: $$[$0-6].length,
 		constantes: [],
-                variables: []
+                variables: [],
+                procedures: [],
+                
            };
            
+           if($$[$0-3][0][0] != undefined) {
            if($$[$0-3][0][0].type == "CONST") {
               var i = 1;
 	      var con = [{
@@ -145,18 +208,21 @@ case 3: this.$ = [{
                 };
 
                 tabla_proc.variables = vari;
+                
+                
               };
+              
            }
            else if ($$[$0-3][0][0].type == "VAR") {
               	var i = 1;
 	      	var vari = [{
                    type: "VAR",
-                   id: $$[$0-3][1][0].right
+                   id: $$[$0-3][0][0].right
                 }];
-	        while (i < $$[$0-3][1].length) {
+	        while (i < $$[$0-3][0].length) {
                   var aux = {
                     type: "VAR",
-                    id: $$[$0-3][1][i].right,
+                    id: $$[$0-3][0][i].right,
                   };
                   vari.push(aux);
                   i = i + 1
@@ -164,10 +230,13 @@ case 3: this.$ = [{
                 
                 tabla_proc.variables = vari;
            };
+           }
 
 
-           symbol_table.procedures.push(tabla_proc);
-           console.log(symbol_table);
+	   if (symbol_table.procedures.length > 0) 
+           	symbol_table.procedures.push(tabla_proc);
+           else
+                symbol_table.procedures = [tabla_proc];
 		if ($$[$0]) { this.$.concat($$[$0]);};
          
 break;
