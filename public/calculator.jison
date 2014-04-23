@@ -3,7 +3,7 @@
 %{
   var symbol_table = [{ nombre:"", padre: null, contenido: {}}];
   var ambito = 0;
-  var symbolTable = symbolTables[scope];
+  var symbol_table = symbol_table[scope];
   
   function getambito(){
     return ambito;
