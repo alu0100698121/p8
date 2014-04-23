@@ -1,38 +1,7 @@
 /* description: Parses end executes mathematical expressions. */
 
 %{
-  var symbol_table = [{ nombre:"", padre: null, contenido: {}}];
-  var ambito = 0;
-  var symbol_table = symbol_table[scope];
-  
-  function getambito(){
-    return ambito;
-  }
-  
-  function subir_ambito(){
-    ambito--;
-    symbol_table = symbol_table[ambito];
-  }
-  
-  function crear_ambito(ID){
-    ambito++;
-    symbol_table[contenido].symbol_table = symbol_table[ambito] = { name: ID, padre:symbol_table, contenido:{}};
-    symbol_table = symbol_table[ambito];	
-  }
-  
-  function encontrar_id(ID){
-    var id;
-    var ambito_actual = ambito;
-    
-    while (ambito_actual > 0 && !id){
-      id = symbol_table[ambito_actual].contenido[ID];
-      ambito_actual--;
-    }
-    
-    ambito_actual++; //no se por que coño hace esto.
-    return [id,ambito_actual];
-  }
-    
+var symbol_table = {};
 
 %}
 
@@ -51,69 +20,9 @@
 %% /* language grammar */
 prog
     : block DOT
-        {
-          $$ = $1;
-          console.log("Bloque:");
-          console.log($1);
-          if ($1[0] != undefined) {
-           if($1[0][0].type == "CONST") {
-              var i = 1;
-	      var con = [{
-                 type: "CONST",
-                 id: $1[0][0].left,
-                 value: $1[0][0].right
-              }];
-	      while (i < $1[0].length) {
-                var aux = {
-                  type: "CONST",
-                  id: $1[0][i].left,
-                  value: $1[0][i].right
-                };
-                con.push(aux);
-                i = i + 1
-              };
-	      symbol_table.constantes = con;
-	      
-              if ($1[1][0].type == "VAR"){
-              	var i = 1;
-	      	var vari = [{
-                   type: "VAR",
-                   id: $1[1][0].right
-                }];
-	        while (i < $1[1].length) {
-                  var aux = {
-                    type: "VAR",
-                    id: $1[1][i].right,
-                  };
-                  vari.push(aux);
-                  i = i + 1
-                };
-
-                symbol_table.variables = vari;
-              };
-           }
-           else if ($1[0][0].type == "VAR") {
-              	var i = 1;
-	      	var vari = [{
-                   type: "VAR",
-                   id: $1[0][0].right
-                }];
-	        while (i < $1[0].length) {
-                  var aux = {
-                    type: "VAR",
-                    id: $1[0][i].right,
-                  };
-                  vari.push(aux);
-                  i = i + 1
-                };
-                
-                symbol_table.variables = vari;
-           };
-          
-          }
+        { 
+          $$ = $1; 
           console.log($$);
-          console.log("Symbol table:");
-          console.log(symbol_table);
           return [$$, symbol_table];
         }
     ;
@@ -149,80 +58,6 @@ procedure
                 block: $7
                 }];
 
-           var tabla_proc = {
-		id: $2,
-		n_par: $4.length,
-		constantes: [],
-                variables: [],
-                procedures: [],
-                
-           };
-           
-           if($7[0][0] != undefined) {
-           if($7[0][0].type == "CONST") {
-              var i = 1;
-	      var con = [{
-                 type: "CONST",
-                 id: $7[0][0].left,
-                 value: $7[0][0].right
-              }];
-	      while (i < $7[0].length) {
-                var aux = {
-                  type: "CONST",
-                  id: $7[0][i].left,
-                  value: $7[0][i].right
-                };
-                con.push(aux);
-                i = i + 1
-              };
-	      tabla_proc.constantes = con;
-	      
-              console.log($7[1][0].type);
-              if ($7[1][0].type == "VAR"){
-              	var i = 1;
-	      	var vari = [{
-                   type: "VAR",
-                   id: $7[1][0].right
-                }];
-	        while (i < $7[1].length) {
-                  var aux = {
-                    type: "VAR",
-                    id: $7[1][i].right,
-                  };
-                  vari.push(aux);
-                  i = i + 1
-                };
-
-                tabla_proc.variables = vari;
-                
-                
-              };
-              
-           }
-           else if ($7[0][0].type == "VAR") {
-              	var i = 1;
-	      	var vari = [{
-                   type: "VAR",
-                   id: $7[0][0].right
-                }];
-	        while (i < $7[0].length) {
-                  var aux = {
-                    type: "VAR",
-                    id: $7[0][i].right,
-                  };
-                  vari.push(aux);
-                  i = i + 1
-                };
-                
-                tabla_proc.variables = vari;
-           };
-           }
-
-
-	   if (symbol_table.procedures.length > 0) 
-           	symbol_table.procedures.push(tabla_proc);
-           else
-                symbol_table.procedures = [tabla_proc];
 		if ($10) { $$.concat($10);};
          }
      |/*vacio*/
