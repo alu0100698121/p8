@@ -1,7 +1,38 @@
 /* description: Parses end executes mathematical expressions. */
 
 %{
-var symbol_table = {};
+  var symbol_table = [{ nombre:"", padre: null, contenido: {}}];
+  var ambito = 0;
+  var symbol_table = symbol_table[ambito];
+  
+  function getambito(){
+    return ambito;
+  }
+  
+  function subir_ambito(){
+    ambito--;
+    symbol_table = symbol_table[ambito];
+  }
+  
+  function crear_ambito(ID){
+    ambito++;
+    symbol_table[contenido].symbol_table = symbol_table[ambito] = { nombre: ID, padre:symbol_table, contenido:{}};
+    symbol_table = symbol_table[ambito];	
+  }
+  
+  function encontrar_id(ID){
+    var id;
+    var ambito_actual = ambito;
+    
+    while (ambito_actual > 0 && !id){
+      id = symbol_table[ambito_actual].contenido[ID];
+      ambito_actual--;
+    }
+    
+    ambito_actual++; //no se por que coño hace esto.
+    return [id,ambito_actual];
+  }
+    
 
 %}
 
@@ -27,15 +58,6 @@ prog
         }
     ;
 
-//expressions
-//    : s  
-//        { $$ = (typeof $1 === 'undefined')? [] : [ $1 ]; }
-//    | expressions ';' s
-//        { $$ = $1;
-//          if ($3) $$.push($3); 
-//          console.log($$);
-//        }
-//    ;
 
 block
      : cont var procedure s
@@ -50,7 +72,7 @@ block
 
 
 procedure
-     : PROCEDURE ID "(" parameters ")" 'BEGIN' block 'END' ";" procedure
+     : PROCEDURE procedure_ID "(" parameters ")" 'BEGIN' block 'END' ";" procedure
          { $$ = [{
                 type: 'PROCEDURE',
                 id: $2,
@@ -86,9 +108,21 @@ otro_parameter
      |/*vacio*/
      ;
 
-// bloques_const = i:constante j:otracostante* ";"_ {return [i].concat(j);}
-// constante = _"const" i:ID "=" n:NUMBER {return {type: "const", left:i, right:n};}
-// otracostante = "," _ i:ID "=" n:NUMBER {return {type: "const", left:i, right:n};}
+
+     
+procedure_ID
+    : ID
+      {
+	if(symbol_table.contenido[$ID]
+	  throw new Error("Procedure " + $ID + " ya ha sido definido");
+	symbol_table.contenido[$ID] = { type: 'Procedure', nombre: $ID }; 
+	crear_ambito($ID);
+	
+	$$ = $ID;
+	
+      }
+   ;
+
     
 
 var
