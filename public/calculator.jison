@@ -172,11 +172,11 @@ var_ID
     ;
     
  cont
-    : CONST ID "=" NUMBER cont_otra ";"
+    : CONST cont_ID cont_otra ";"
 	{$$ = [{
 	      type: 'CONST',
-	      left: $2,
-	      right: $4     
+	      left: $2[0],
+	      right: $2[1]    
 	      }];
 	      
 	      if($5){ $$.concat($5);};
@@ -185,11 +185,11 @@ var_ID
      ;
     
  cont_otra
-    : COMMA ID "=" NUMBER cont_otra
+    : COMMA cont_ID cont_otra
 	{$$ = [{
 	      type: 'CONST',
-	      left: $2,
-	      right: $4     
+	      left: $2[0],
+	      right: $2[1]     
 	      }];
 	      
 	      if($5){ $$.concat($5);};
@@ -197,6 +197,22 @@ var_ID
  
     | /*vacio*/
     ;
+
+cont_ID
+    : ID "=" NUMBER
+      {
+	if(symbol_table.contenido[$ID]
+	  throw new Error("Constante: " + $ID + " ya está definida.");
+	
+	symbol_table.contenido[$ID] = {type: 'Const', name: $ID value: $NUMBER  };
+	
+	$$ = [];
+	$$.push($ID);
+	$$.push($NUMBER);
+	
+      }
+    ;    
+    
 s
     :  ID '=' e ';'
          {$$ = {
