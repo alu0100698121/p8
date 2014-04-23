@@ -1,35 +1,36 @@
 /* description: Parses end executes mathematical expressions. */
 
 %{
-  var symbol_table = [{ nombre:"", padre: null, contenido: {}}];
+  var symbol_tables = [{ nombre:"GLOBAL", padre: null, contenido: {}}];
   var ambito = 0;
-  var symbol_table = symbol_table[ambito];
+  var symbol_table = symbol_tables[ambito];
   
   function getambito(){
     return ambito;
   }
-  
+ /* 
   function subir_ambito(){
     ambito--;
-    symbol_table = symbol_table[ambito];
+    symbol_table = symbol_tables[ambito];
   }
-  
+  */
   function crear_ambito(ID){
     ambito++;
-    symbol_table[contenido].symbol_table = symbol_table[ambito] = { nombre: ID, padre:symbol_table, contenido:{}};
-    symbol_table = symbol_table[ambito];	
+    symbol_tables.push({ nombre: ID, padre:symbol_table.nombre, contenido:{}});
+    symbol_table = symbol_tables[ambito];	
+    return symbol_table;
   }
   
   function encontrar_id(ID){
     var id;
     var ambito_actual = ambito;
     
-    while (ambito_actual > 0 && !id){
-      id = symbol_table[ambito_actual].contenido[ID];
+    do {
+      id = symbol_tables[ambito_actual].contenido[ID];
       ambito_actual--;
-    }
+    } while (ambito_actual >= 0 && !id)
     
-    ambito_actual++; //no se por que coño hace esto.
+    ambito_actual++; 
     return [id,ambito_actual];
   }
     
@@ -54,7 +55,7 @@ prog
         { 
           $$ = $1; 
           console.log($$);
-          return [$$, symbol_table];
+          return [$$, symbol_tables];
         }
     ;
 
@@ -89,7 +90,7 @@ procedure
 parameters
      :  param_ID otro_parameter  
          { $$ = [{
-		type: PAR,
+		type: 'PAR',
                 value: $1
                 }];
 
@@ -101,7 +102,7 @@ parameters
 otro_parameter
      : COMMA param_ID otro_parameter
          { $$ = [{
-		type: PAR,
+		type: 'PAR',
                 value: $2
                 }];
 
@@ -111,20 +112,20 @@ otro_parameter
      ;
 
 param_ID
-    :e
+    :ID
       {
-	if(symbol_table.contenido[$ID]
-	  throw new Error("Nombre de param " + $e + " repetido");
-	symbol_table.contenido[$e] = {type: 'Param'};
+	if(symbol_table.contenido[$ID])
+	  throw new Error("Nombre de param " + $ID + " repetido");
+	symbol_table.contenido[$ID] = {type: 'Param'};
 	
-	$$ = $e;
+	$$ = $ID;
       }
     ;  
      
 procedure_ID
     : ID
       {
-	if(symbol_table.contenido[$ID]
+	if(symbol_table.contenido[$ID])
 	  throw new Error("Procedure " + $ID + " ya ha sido definido");
 	symbol_table.contenido[$ID] = { type: 'Procedure', nombre: $ID }; 
 	crear_ambito($ID);
@@ -163,8 +164,8 @@ var_otra
 var_ID
     : ID
       {
-	if(symbol_table.contenido[$ID]
-	  throw new Error("Variable: " + $ID + " ya está definida.");
+	//if(symbol_table.contenido[$ID])
+	//  throw new Error("Variable: " + $ID + " ya está definida.");
 	
 	symbol_table.contenido[$ID] = {type: 'VAR'};
 	
@@ -181,7 +182,7 @@ var_ID
 	      right: $2[1]    
 	      }];
 	      
-	      if($5){ $$.concat($5);};
+	      if($3){ $$.concat($3);};
 	}
     |/*vacio*/ 
      ;
@@ -194,7 +195,7 @@ var_ID
 	      right: $2[1]     
 	      }];
 	      
-	      if($5){ $$.concat($5);};
+	      if($3){ $$.concat($3);};
 	 }
  
     | /*vacio*/
@@ -203,10 +204,10 @@ var_ID
 cont_ID
     : ID "=" NUMBER
       {
-	if(symbol_table.contenido[$ID]
+	if(symbol_table.contenido[$ID])
 	  throw new Error("Constante: " + $ID + " ya está definida.");
 	
-	symbol_table.contenido[$ID] = {type: 'Const', name: $ID value: $NUMBER  };
+	symbol_table.contenido[$ID] = {type: 'Const', name: $ID, value: $NUMBER  };
 	
 	$$ = [];
 	$$.push($ID);
@@ -219,24 +220,24 @@ s
     :  ID '=' e ';'
          {
 	   var result = encontrar_id($ID);
-           var s = info[1];
-           info = info[0];
+           //var s = info[1];
+           //info = info[0];
 
-           if (result && result[0].type === 'VAR') {
+           if (result[0] && result[0].type === 'VAR') {
                $$ = {
 	      type: "=",
 	      left: $1,
 	      right: $3	    
 	      };
            }
-           else if (result && result[0].type === 'PAR') {
+           else if (result[0] && result[0].type === 'PAR') {
               $$ = {
 	      type: "=",
 	      left: $1,
 	      right: $3	    
 	      };
            }
-           else if (result && result[0].type === 'FUNC') {
+           else if (result[0] && result[0].type === 'FUNC') {
               throw new Error("Símbolo "+$ID+" referencia a funcion");
            }
            else {
