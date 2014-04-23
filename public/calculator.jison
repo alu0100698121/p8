@@ -60,7 +60,7 @@ prog
 
 
 block
-     : cont var procedure s
+     : cont var procedure s+
           { $$ = [];
             if ($1) $$.push($1);
             if ($2) $$.push($2);
@@ -89,6 +89,7 @@ procedure
 parameters
      :  param_ID otro_parameter  
          { $$ = [{
+		type: PAR,
                 value: $1
                 }];
 
@@ -100,6 +101,7 @@ parameters
 otro_parameter
      : COMMA param_ID otro_parameter
          { $$ = [{
+		type: PAR,
                 value: $2
                 }];
 
@@ -215,11 +217,34 @@ cont_ID
     
 s
     :  ID '=' e ';'
-         {$$ = {
+         {
+	   var result = encontrar_id($ID);
+           var s = info[1];
+           info = info[0];
+
+           if (result && result[0].type === 'VAR') {
+               $$ = {
 	      type: "=",
 	      left: $1,
 	      right: $3	    
 	      };
+           }
+           else if (result && result[0].type === 'PAR') {
+              $$ = {
+	      type: "=",
+	      left: $1,
+	      right: $3	    
+	      };
+           }
+           else if (result && result[0].type === 'FUNC') {
+              throw new Error("Símbolo "+$ID+" referencia a funcion");
+           }
+           else {
+              throw new Error("Símbolo "+$ID+" referencia no declarada");
+           }
+        
+	   
+	
 	 }
     | CALL ID "(" parameters ")" ";"
          {$$ = {
@@ -247,12 +272,7 @@ s
 	 
     ;
 
-//     factor = NUMBER
-//        / ID
-//        / LEFTPAR t:exp RIGHTPAR   { return t; }
     
-    
-// cond   = c:factor op:COMPARISON? e:exp? { return {type: op, left: c, right: e}; }
 c  //comparison
     : e COMPARISON e
 	{ $$ = {
