@@ -87,7 +87,7 @@ procedure
 
 
 parameters
-     : e otro_parameter  
+     :  param_ID otro_parameter  
          { $$ = [{
                 value: $1
                 }];
@@ -98,7 +98,7 @@ parameters
      ;
 
 otro_parameter
-     : COMMA e otro_parameter
+     : COMMA param_ID otro_parameter
          { $$ = [{
                 value: $2
                 }];
@@ -108,7 +108,16 @@ otro_parameter
      |/*vacio*/
      ;
 
-
+param_ID
+    :e
+      {
+	if(symbol_table.contenido[$ID]
+	  throw new Error("Nombre de param " + $e + " repetido");
+	symbol_table.contenido[$e] = {type: 'Param'};
+	
+	$$ = $e;
+      }
+    ;  
      
 procedure_ID
     : ID
@@ -126,7 +135,7 @@ procedure_ID
     
 
 var
-    : VAR ID var_otra ";"
+    : VAR var_ID var_otra ";"
 	{$$ = [{
 	      type: 'VAR',
 	      right: $2	    
@@ -138,7 +147,7 @@ var
     ;
     
 var_otra
-    : COMMA ID var_otra
+    : COMMA var_ID var_otra
 	{$$ = [{
 	      type: 'VAR',
 	      right: $2	    
@@ -148,6 +157,19 @@ var_otra
 	 }
     |/*vacio*/
     ;  
+    
+var_ID
+    : ID
+      {
+	if(symbol_table.contenido[$ID]
+	  throw new Error("Variable: " + $ID + " ya está definida.");
+	
+	symbol_table.contenido[$ID] = {type: 'VAR'};
+	
+	$$ = $ID;
+	
+      }
+    ;
     
  cont
     : CONST ID "=" NUMBER cont_otra ";"
