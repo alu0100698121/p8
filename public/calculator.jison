@@ -1,11 +1,38 @@
 /* description: Parses end executes mathematical expressions. */
 
 %{
-var symbol_table = {
-   constantes: [],
-   variables: [],
-   procedures: []
-};
+  var symbol_table = [{ nombre:"", padre: null, contenido: {}}];
+  var ambito = 0;
+  var symbolTable = symbolTables[scope];
+  
+  function getambito(){
+    return ambito;
+  }
+  
+  function subir_ambito(){
+    ambito--;
+    symbol_table = symbol_table[ambito];
+  }
+  
+  function crear_ambito(ID){
+    ambito++;
+    symbol_table[contenido].symbol_table = symbol_table[ambito] = { name: ID, padre:symbol_table, contenido:{}};
+    symbol_table = symbol_table[ambito];	
+  }
+  
+  function encontrar_id(ID){
+    var id;
+    var ambito_actual = ambito;
+    
+    while (ambito_actual > 0 && !id){
+      id = symbol_table[ambito_actual].contenido[ID];
+      ambito_actual--;
+    }
+    
+    ambito_actual++; //no se por que coño hace esto.
+    return [id,ambito_actual];
+  }
+    
 
 %}
 
