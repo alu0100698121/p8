@@ -207,7 +207,7 @@ cont_ID
 	if(symbol_table.contenido[$ID])
 	  throw new Error("Constante: " + $ID + " ya está definida.");
 	
-	symbol_table.contenido[$ID] = {type: 'Const', name: $ID, value: $NUMBER  };
+	symbol_table.contenido[$ID] = {type: 'CONST', name: $ID, value: $NUMBER  };
 	
 	$$ = [];
 	$$.push($ID);
@@ -240,12 +240,13 @@ s
            else if (result[0] && result[0].type === 'FUNC') {
               throw new Error("Símbolo "+$ID+" referencia a funcion");
            }
+           else if result[0] && result[0].type === 'CONST') {
+              throw new Error("Símbolo "+$ID+" referencia a constante");
+           }
            else {
               throw new Error("Símbolo "+$ID+" referencia no declarada");
            }
         
-	   
-	
 	 }
     | CALL ID "(" parameters ")" ";"
          {$$ = {
