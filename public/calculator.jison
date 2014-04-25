@@ -240,7 +240,7 @@ s
            else if (result[0] && result[0].type === 'FUNC') {
               throw new Error("Símbolo "+$ID+" referencia a funcion");
            }
-           else if result[0] && result[0].type === 'CONST') {
+           else if (result[0] && result[0].type === 'CONST') {
               throw new Error("Símbolo "+$ID+" referencia a constante");
            }
            else {

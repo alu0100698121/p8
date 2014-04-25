@@ -188,7 +188,7 @@ case 20:
 	if(symbol_table.contenido[$$[$0-2]])
 	  throw new Error("Constante: " + $$[$0-2] + " ya está definida.");
 	
-	symbol_table.contenido[$$[$0-2]] = {type: 'Const', name: $$[$0-2], value: $$[$0]  };
+	symbol_table.contenido[$$[$0-2]] = {type: 'CONST', name: $$[$0-2], value: $$[$0]  };
 	
 	this.$ = [];
 	this.$.push($$[$0-2]);
@@ -218,12 +218,13 @@ case 21:
            else if (result[0] && result[0].type === 'FUNC') {
               throw new Error("Símbolo "+$$[$0-3]+" referencia a funcion");
            }
+           else if (result[0] && result[0].type === 'CONST') {
+              throw new Error("Símbolo "+$$[$0-3]+" referencia a constante");
+           }
            else {
               throw new Error("Símbolo "+$$[$0-3]+" referencia no declarada");
            }
         
-	   
-	
 	 
 break;
 case 22:this.$ = {
