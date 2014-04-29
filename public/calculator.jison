@@ -79,17 +79,29 @@ block
 
 
 procedure
-     : PROCEDURE procedure_ID "(" parameters ")" 'BEGIN' block 'END' ";" procedure
+     : PROCEDURE nombre_completo 'BEGIN' block 'END' ";" procedure
          { $$ = [{
                 type: 'PROCEDURE',
-                id: $2,
-                parameters: $4,
-                block: $7
+                id: $2[0],
+                parameters: $2[1],
+                block: $4
                 }];
 
-		if ($10) { $$.concat($10);};
+		if ($7) { $$.concat($7);};
          }
      |/*vacio*/
+     ;
+
+nombre_completo
+     : procedure_ID "(" parameters ")"
+	{
+	    symbol_table.contenido[$procedure_ID] = { type: 'Procedure', nombre: $procedure_ID, n_parametros: $3.length }; 
+	    crear_ambito($procedure_ID);
+	    for (var i=0; i < $3.length; i++) {
+	      
+	      symbol_table.contenido[$3[i].value] = {type: 'Param'};
+	    }
+	}
      ;
 
 
@@ -104,6 +116,12 @@ parameters
          }
      |/*vacio*/
      ;
+     
+// parameters_call
+//      :  s
+//      ;
+//  Mirar para cada argumento en el call si está en la symbol_table del ámbito actual o superior (encontrar_id)
+//  
 
 otro_parameter
      : COMMA param_ID otro_parameter
@@ -119,11 +137,7 @@ otro_parameter
 
 param_ID
     :ID
-      {
-	if(symbol_table.contenido[$ID])
-	  throw new Error("Nombre de param " + $ID + " repetido");
-	symbol_table.contenido[$ID] = {type: 'Param'};
-	
+      {	
 	$$ = $ID;
       }
     ;  
@@ -131,10 +145,6 @@ param_ID
 procedure_ID
     : ID
       {
-	if(symbol_table.contenido[$ID])
-	  throw new Error("Procedure " + $ID + " ya ha sido definido");
-	symbol_table.contenido[$ID] = { type: 'Procedure', nombre: $ID }; 
-	crear_ambito($ID);
 	
 	$$ = $ID;
 	
@@ -182,28 +192,11 @@ var_ID
     
  cont
     : CONST cont_ID cont_otra ";"
-	{$$ = [{
-	      type: 'CONST',
-	      left: $2[0],
-	      right: $2[1]    
-	      }];
-	      
-	      if($3){ $$.concat($3);};
-	}
     |/*vacio*/ 
      ;
     
  cont_otra
-    : COMMA cont_ID cont_otra
-	{$$ = [{
-	      type: 'CONST',
-	      left: $2[0],
-	      right: $2[1]     
-	      }];
-	      
-	      if($3){ $$.concat($3);};
-	 }
- 
+    : COMMA cont_ID cont_otra 
     | /*vacio*/
     ;
 
@@ -260,6 +253,36 @@ s
               value: $2,
               parameters: $4
               };
+	      
+	      var result = encontrar_id($ID);
+	      console.log("proc aqui");
+	      console.log($4);
+	      if (result[0] && result[0].type === "Procedure") {
+		console.log("entro primer if");
+		if ($4.length == result[0].n_parametros) {
+		  console.log("entro segundo if");
+		  var it = 0;
+		  while (it < result[0].n_parametros) {
+		    if (!p) {
+		      throw new Error("Símbolo "+$ID+" referencia no declarada");
+		    }
+		  }
+		  
+		  $$ = {
+		  type: "=",
+		  left: $1,
+		  right: $3	    
+		  }
+		  
+		}
+		else {
+		 throw new Error("Llamada a "+$ID+" con número de parámetros erróneo"); 
+		}
+	      }
+	      else {
+		throw new Error("Símbolo "+$ID+" referencia no declarada");
+	      }
+           
          }
     | IF c THEN s ELSE s 
 	 {$$ = {
