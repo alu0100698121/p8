@@ -85,7 +85,13 @@ switch (yystate) {
 case 1: 
           this.$ = $$[$0-1]; 
           console.log(this.$);
-          return [this.$, symbol_tables];
+	  var obj = symbol_tables;
+	  
+	  symbol_tables = [{ nombre:"GLOBAL", padre: null, contenido: {}}];
+	  ambito = 0;
+	  symbol_table = symbol_tables[ambito];
+	  
+          return [this.$, obj];
         
 break;
 case 2: this.$ = [];

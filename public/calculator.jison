@@ -55,7 +55,13 @@ prog
         { 
           $$ = $1; 
           console.log($$);
-          return [$$, symbol_tables];
+	  var obj = symbol_tables;
+	  
+	  symbol_tables = [{ nombre:"GLOBAL", padre: null, contenido: {}}];
+	  ambito = 0;
+	  symbol_table = symbol_tables[ambito];
+	  
+          return [$$, obj];
         }
     ;
 
