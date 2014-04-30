@@ -26,7 +26,6 @@
     var ambito_actual = ambito;
     
     do {
-      console.log("ambito actual: " + ambito_actual);
       id = symbol_tables[ambito_actual].contenido[ID];
       ambito_actual--;
     } while (ambito_actual >= 0 && !id)
@@ -101,12 +100,21 @@ nombre_completo
 		 param: $parameters
 	    };
 	    
-	    symbol_table.contenido[$ID] = { type: 'Procedure', nombre: $ID, n_parametros: $3.length }; 
-	    crear_ambito($ID);
-	    for (var i=0; i < $3.length; i++) {
-	      
-	      symbol_table.contenido[$3[i].value] = {type: 'Param'};
+	    if ($3){
+	      symbol_table.contenido[$ID] = { type: 'Procedure', nombre: $ID, n_parametros: $3.length }; 
+	      crear_ambito($ID);
+	      for (var i=0; i < $3.length; i++) {
+		symbol_table.contenido[$3[i].value] = {type: 'PAR'};
+	      }
 	    }
+
+	    
+	    else{
+	      symbol_table.contenido[$ID] = { type: 'Procedure', nombre: $ID, n_parametros: 0 }; 
+	      crear_ambito($ID);
+	    }
+	    
+	
 	}
      ;
 
@@ -183,7 +191,7 @@ var_ID
 	
       }
     ;
-    
+   
  cont
     : CONST cont_ID cont_otra ";"
     |/*vacio*/ 
@@ -215,8 +223,6 @@ s
 	   var result = encontrar_id($ID);
            //var s = info[1];
            //info = info[0];
-           console.log("AQUI: ");
-	   console.log(result);
 
            if (result[0] && result[0].type === 'VAR') {
                $$ = {
@@ -244,42 +250,56 @@ s
         
 	 }
     | CALL ID "(" parameters ")" ";"
-         {$$ = {
-              type: 'CALL',
-              value: $2,
-              parameters: $4
-              };
-	      
+      {
+	      console.log("antes if");        
+	      var par = $4;
 	      var result = encontrar_id($ID);
-	      console.log("proc aqui");
-	      console.log($4);
-	      if (result[0] && result[0].type === "Procedure") {
-		console.log("entro primer if");
-		if ($4.length == result[0].n_parametros) {
-		  console.log("entro segundo if");
-		  var it = 0;
-		  while (it < result[0].n_parametros) {
-		    if (!p) {
-		      throw new Error("Símbolo "+$ID+" referencia no declarada");
-		    }
-		  }
-		  
-		  $$ = {
-		  type: "=",
-		  left: $1,
-		  right: $3	    
-		  }
-		  
-		}
+	      if (result[0] && result[0].type === "Procedure") { //comprobamos que procedure definido y el tipo
+		console.log("if 1");
+		
+		if(!par && !result[0].n_parametros){
+		   $$ = {
+		      type: 'CALL',
+		      value: $2,
+		      parameters: "no parametros"
+		   }; /* object */
+		} /* if */
+		
 		else {
-		 throw new Error("Llamada a "+$ID+" con número de parámetros erróneo"); 
-		}
-	      }
-	      else {
-		throw new Error("Símbolo "+$ID+" referencia no declarada");
-	      }
-           
-         }
+		  if (!result[0].n_parametros || !par) {
+		    throw new Error("Llamada a "+$ID+" con número de parámetros erróneo");
+		  }
+		    
+		  else {
+		    console.log("length: " + $4.length);
+		    console.log("n_par: " + result[0].n_parametros);
+		    if ($4.length === result[0].n_parametros) {
+// 		      
+		      for (var i = 0; i < $4.length; i++) {
+			var temp = par[i];
+			if(!temp) 
+			  throw new Error("Símbolo "+temp.id.value+" referencia no declarada");
+		      } /* for */
+		      
+		      $$ = {
+			  type: 'CALL',
+			  value: $2,
+			  parameters: $4
+		      }; /* object */
+		      
+		    } /* if */
+		    else 
+		      throw new Error("Llamada a "+$ID+" con número de parámetros erróneo"); 
+		   } /* else */
+		} /* else */
+		
+	        //return $$;
+
+	      } /* if */
+	      
+	      else 
+		  throw new Error("Símbolo "+$ID+" referencia no declarada");
+         } /* END */
     | IF c THEN s ELSE s 
 	 {$$ = {
 		type:'IFELSE',

@@ -118,12 +118,21 @@ case 5:
 		 param: $$[$0-1]
 	    };
 	    
-	    symbol_table.contenido[$$[$0-3]] = { type: 'Procedure', nombre: $$[$0-3], n_parametros: $$[$0-1].length }; 
-	    crear_ambito($$[$0-3]);
-	    for (var i=0; i < $$[$0-1].length; i++) {
-	      
-	      symbol_table.contenido[$$[$0-1][i].value] = {type: 'Param'};
+	    if ($$[$0-1]){
+	      symbol_table.contenido[$$[$0-3]] = { type: 'Procedure', nombre: $$[$0-3], n_parametros: $$[$0-1].length }; 
+	      crear_ambito($$[$0-3]);
+	      for (var i=0; i < $$[$0-1].length; i++) {
+		symbol_table.contenido[$$[$0-1][i].value] = {type: 'PAR'};
+	      }
 	    }
+
+	    
+	    else{
+	      symbol_table.contenido[$$[$0-3]] = { type: 'Procedure', nombre: $$[$0-3], n_parametros: 0 }; 
+	      crear_ambito($$[$0-3]);
+	    }
+	    
+	
 	
 break;
 case 6: this.$ = [{
@@ -187,8 +196,6 @@ case 21:
 	   var result = encontrar_id($$[$0-3]);
            //var s = info[1];
            //info = info[0];
-           console.log("AQUI: ");
-	   console.log(result);
 
            if (result[0] && result[0].type === 'VAR') {
                this.$ = {
@@ -216,41 +223,55 @@ case 21:
         
 	 
 break;
-case 22:this.$ = {
-              type: 'CALL',
-              value: $$[$0-4],
-              parameters: $$[$0-2]
-              };
-	      
+case 22:
+	      console.log("antes if");        
+	      var par = $$[$0-2];
 	      var result = encontrar_id($$[$0-4]);
-	      console.log("proc aqui");
-	      console.log($$[$0-2]);
-	      if (result[0] && result[0].type === "Procedure") {
-		console.log("entro primer if");
-		if ($$[$0-2].length == result[0].n_parametros) {
-		  console.log("entro segundo if");
-		  var it = 0;
-		  while (it < result[0].n_parametros) {
-		    if (!p) {
-		      throw new Error("Símbolo "+$$[$0-4]+" referencia no declarada");
-		    }
-		  }
-		  
-		  this.$ = {
-		  type: "=",
-		  left: $$[$0-5],
-		  right: $$[$0-3]	    
-		  }
-		  
-		}
+	      if (result[0] && result[0].type === "Procedure") { //comprobamos que procedure definido y el tipo
+		console.log("if 1");
+		
+		if(!par && !result[0].n_parametros){
+		   this.$ = {
+		      type: 'CALL',
+		      value: $$[$0-4],
+		      parameters: "no parametros"
+		   }; /* object */
+		} /* if */
+		
 		else {
-		 throw new Error("Llamada a "+$$[$0-4]+" con número de parámetros erróneo"); 
-		}
-	      }
-	      else {
-		throw new Error("Símbolo "+$$[$0-4]+" referencia no declarada");
-	      }
-           
+		  if (!result[0].n_parametros || !par) {
+		    throw new Error("Llamada a "+$$[$0-4]+" con número de parámetros erróneo");
+		  }
+		    
+		  else {
+		    console.log("length: " + $$[$0-2].length);
+		    console.log("n_par: " + result[0].n_parametros);
+		    if ($$[$0-2].length === result[0].n_parametros) {
+// 		      
+		      for (var i = 0; i < $$[$0-2].length; i++) {
+			var temp = par[i];
+			if(!temp) 
+			  throw new Error("Símbolo "+temp.id.value+" referencia no declarada");
+		      } /* for */
+		      
+		      this.$ = {
+			  type: 'CALL',
+			  value: $$[$0-4],
+			  parameters: $$[$0-2]
+		      }; /* object */
+		      
+		    } /* if */
+		    else 
+		      throw new Error("Llamada a "+$$[$0-4]+" con número de parámetros erróneo"); 
+		   } /* else */
+		} /* else */
+		
+	        //return this.$;
+
+	      } /* if */
+	      
+	      else 
+		  throw new Error("Símbolo "+$$[$0-4]+" referencia no declarada");
          
 break;
 case 23:this.$ = {
@@ -498,7 +519,6 @@ parse: function parse(input) {
     var ambito_actual = ambito;
     
     do {
-      console.log("ambito actual: " + ambito_actual);
       id = symbol_tables[ambito_actual].contenido[ID];
       ambito_actual--;
     } while (ambito_actual >= 0 && !id)
