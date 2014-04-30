@@ -159,14 +159,13 @@ case 14:this.$ = [{
 	      type: 'VAR',
 	      right: $$[$0-1]	    
 	      }];
-	      
+	 
 	      if ($$[$0]) { this.$.concat($$[$0]);};
 	 
 break;
 case 16:
 	//if(symbol_table.contenido[$$[$0]])
 	//  throw new Error("Variable: " + $$[$0] + " ya está definida.");
-	
 	symbol_table.contenido[$$[$0]] = {type: 'VAR'};
 	
 	this.$ = $$[$0];
@@ -189,6 +188,8 @@ case 22:
 	   var result = encontrar_id($$[$0-3]);
            //var s = info[1];
            //info = info[0];
+           console.log("AQUI: ");
+	   console.log(result);
 
            if (result[0] && result[0].type === 'VAR') {
                this.$ = {
@@ -231,7 +232,6 @@ case 23:this.$ = {
 		  console.log("entro segundo if");
 		  var it = 0;
 		  while (it < result[0].n_parametros) {
-		    var p = encontrar_id(result[0].parameters[it].value);
 		    if (!p) {
 		      throw new Error("Símbolo "+$$[$0-4]+" referencia no declarada");
 		    }
@@ -499,6 +499,7 @@ parse: function parse(input) {
     var ambito_actual = ambito;
     
     do {
+      console.log("ambito actual: " + ambito_actual);
       id = symbol_tables[ambito_actual].contenido[ID];
       ambito_actual--;
     } while (ambito_actual >= 0 && !id)

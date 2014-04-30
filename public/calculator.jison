@@ -26,6 +26,7 @@
     var ambito_actual = ambito;
     
     do {
+      console.log("ambito actual: " + ambito_actual);
       id = symbol_tables[ambito_actual].contenido[ID];
       ambito_actual--;
     } while (ambito_actual >= 0 && !id)
@@ -171,7 +172,7 @@ var_otra
 	      type: 'VAR',
 	      right: $2	    
 	      }];
-	      
+	 
 	      if ($3) { $$.concat($3);};
 	 }
     |/*vacio*/
@@ -182,7 +183,6 @@ var_ID
       {
 	//if(symbol_table.contenido[$ID])
 	//  throw new Error("Variable: " + $ID + " ya está definida.");
-	
 	symbol_table.contenido[$ID] = {type: 'VAR'};
 	
 	$$ = $ID;
@@ -221,6 +221,8 @@ s
 	   var result = encontrar_id($ID);
            //var s = info[1];
            //info = info[0];
+           console.log("AQUI: ");
+	   console.log(result);
 
            if (result[0] && result[0].type === 'VAR') {
                $$ = {
