@@ -82,8 +82,8 @@ procedure
      : PROCEDURE nombre_completo 'BEGIN' block 'END' ";" procedure
          { $$ = [{
                 type: 'PROCEDURE',
-                id: $2[0],
-                parameters: $2[1],
+                id: $2.id,
+                parameters: $2.param,
                 block: $4
                 }];
 
@@ -93,10 +93,15 @@ procedure
      ;
 
 nombre_completo
-     : procedure_ID "(" parameters ")"
-	{
-	    symbol_table.contenido[$procedure_ID] = { type: 'Procedure', nombre: $procedure_ID, n_parametros: $3.length }; 
-	    crear_ambito($procedure_ID);
+     : ID "(" parameters ")"
+	{	
+	    $$ = {
+		 id: $ID,
+		 param: $parameters
+	    };
+	    
+	    symbol_table.contenido[$ID] = { type: 'Procedure', nombre: $ID, n_parametros: $3.length }; 
+	    crear_ambito($ID);
 	    for (var i=0; i < $3.length; i++) {
 	      
 	      symbol_table.contenido[$3[i].value] = {type: 'Param'};
@@ -142,17 +147,6 @@ param_ID
       }
     ;  
      
-procedure_ID
-    : ID
-      {
-	
-	$$ = $ID;
-	
-      }
-   ;
-
-    
-
 var
     : VAR var_ID var_otra ";"
 	{$$ = [{
