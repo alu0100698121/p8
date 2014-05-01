@@ -276,7 +276,7 @@ s
 		    if ($4.length === result[0].n_parametros) {
 // 		      
 		      for (var i = 0; i < $4.length; i++) {
-			var temp = par[i];
+			var temp = encontrar_id(par[i]); // Era aquí el error XD
 			if(!temp) 
 			  throw new Error("Símbolo "+temp.id.value+" referencia no declarada");
 		      } /* for */
