@@ -47,7 +47,14 @@ post '/save' do
         %Q{<div class="error">Can't save file with name '#{name}'.</div>}
       redirect back
     else 
-      c  = PL0Program.first(:name => name)
+      user = Usuario.first(:name => session[:email]) #buscamos el usuario.
+      if !user # si usuario no existe lo creamos
+	user = Usuario.create (:name => session[:email])
+      end
+      
+      pp user
+      
+      c  = PL0Program.first(:name => name) #Buscamos programa
       if c
         c.source = params["input"]
         c.save
@@ -59,6 +66,8 @@ post '/save' do
         c = PL0Program.create(
           :name => params["fname"], 
           :source => params["input"])
+	user.pl0program << c  #añadimos el programa a usuario
+	user.save #guardamos el usuario
       end
       flash[:notice] = 
         %Q{<div class="success">File saved as #{c.name} by #{session[:name]}.</div>}

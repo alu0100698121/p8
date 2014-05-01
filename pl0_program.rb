@@ -3,11 +3,21 @@ require 'data_mapper'
 DataMapper.setup(:default, 
                  ENV['DATABASE_URL'] || "sqlite3://#{Dir.pwd}/database.db" )
 
+
+class Usuario
+  include DataMapper::Resource
+  
+  property :name, String, :key =>true
+  has n, :pl0program
+end
+
 class PL0Program
   include DataMapper::Resource
   
   property :name, String, :key => true
   property :source, String, :length => 1..1024
+  
+   belongs_to :usuario
 end
 
 DataMapper.finalize
