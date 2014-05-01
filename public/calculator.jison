@@ -277,8 +277,10 @@ s
 // 		      
 		      for (var i = 0; i < $4.length; i++) {
 			var temp = encontrar_id(par[i].value); // Era aquí el error XD
-			if(!temp) 
-			  throw new Error("Símbolo "+temp.id.value+" referencia no declarada");
+			console.log("par[]" + i + "  " +par[i].value);
+			console.log(temp);
+			if(!temp[0]) 
+			  throw new Error("Símbolo "+par[i].value+" referencia no declarada");
 		      } /* for */
 		      
 		      $$ = {
