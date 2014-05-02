@@ -46,7 +46,7 @@ get '/:usuario?' do usuario
   programas = user.programs
   source = ""
 
-  erb :index, :locals => { :programs => programas, :source => source, :user => user.username + '/' }
+  erb :index, :locals => { :programs => programas, :source => source, :user => user.username}
 end
 
 get '/:usuario?:/programa?' do |usuario,programa|
@@ -118,9 +118,8 @@ post '/save' do
       flash[:notice] = 
         %Q{<div class="success">File saved as #{c.name} by #{session[:name]}.</div>}
       pp c
-      flash[:notice] = 
-        %Q{<div class="Salgo de save"</div>}
-      redirect to '/'+user.username+'/'+name
+      post user.username
+      redirect to '/'+ user.username +'/'+ name
     end
   else
     flash[:notice] = 
