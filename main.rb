@@ -84,7 +84,7 @@ end
 
 post '/save' do
   pp params
-  puts session[:name]
+  puts "#{session[:name]}"
   name = params[:fname]
   if session[:auth] # authenticated
     if settings.reserved_words.include? name  # check it on the client side
