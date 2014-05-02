@@ -84,7 +84,6 @@ end
 
 post '/save' do
   pp params
-  puts "jjjjjjj"
   name = params[:fname]
   if session[:auth] # authenticated
     if settings.reserved_words.include? name  # check it on the client side
@@ -117,7 +116,7 @@ post '/save' do
       flash[:notice] = 
         %Q{<div class="success">File saved as #{c.name} by #{session[:name]}.</div>}
       pp c
-      redirect to '/'+user.username+'/'+name
+#       redirect to '/'+user.username+'/'+name
     end
   else
     flash[:notice] = 
