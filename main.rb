@@ -83,8 +83,6 @@ get '/:selected?' do |selected|
 end
 
 post '/save' do
-  flash[:notice] = 
-        %Q{<div class="Entro en save"</div>}
   pp params
   name = params[:fname]
   if session[:auth] # authenticated
@@ -118,7 +116,6 @@ post '/save' do
       flash[:notice] = 
         %Q{<div class="success">File saved as #{c.name} by #{session[:name]}.</div>}
       pp c
-      post user.username
       redirect to '/'+name
     end
   else
