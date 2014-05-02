@@ -25,6 +25,16 @@ get '/test' do
   erb :test
 end
 
+get '/' do
+   todos_usuarios = Usuario.all
+   programas = []
+   
+   source = "a = 3-2-1."
+   erb :index,:locals => { :programs => programas, :source => source, :user => todos_usuarios }
+   
+end
+
+
 get '/:usuario?:/programa?' do |usuario,programa|
    var user =  Usuario.first(:username => usuario)
    pp user
