@@ -1,9 +1,17 @@
 body {
-  font-family: Helvetica, Arial, sans-serif; }
+  font-family: Antiqua;
+  background-color: #81f7f3; }
 
 h1 {
   color: #990033;
-  font: 32px/1 Helvetica, Arial, sans-serif; }
+  font: 32px/1 Antiqua;
+  text-align: center;
+  font-weight: bold;
+  font-style: italic; }
+
+table {
+  margin-left: auto;
+  margin-right: auto; }
 
 header h1 {
   font-size: 40px;
@@ -13,7 +21,8 @@ header h1 {
   padding-left: 84px; }
 
 nav {
-  font-weight: bold; }
+  font-weight: bold;
+  font-size: small; }
   nav ul {
     list-style: none;
     margin: 0;
@@ -32,10 +41,16 @@ nav {
       background-color: #002eb8; }
 
 p {
-  font: 13px/1.4 Helvetica, Arial, sans-serif; }
+  font: 13px/1.4 Antiqua; }
 
 label {
+  text-align: center;
   display: block; }
+
+input {
+  display: block;
+  margin-left: auto;
+  margin-right: auto; }
 
 nav a.current {
   background: #c4c4c4; }

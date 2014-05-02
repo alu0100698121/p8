@@ -4,15 +4,25 @@ $white: #fff;
 $green: #00FF33;
 $blue: #002EB8;
 $orange: #FF6600;
-$main-font: Helvetica, Arial, sans-serif;
+$bgcolor: #81F7F3;
+$main-font: Antiqua;
 
 body {
   font-family: $main-font;
+  background-color: $bgcolor;
 }
 
 h1 {
   color: $red;
   font: 32px/1 $main-font;
+  text-align: center;
+  font-weight: bold;
+  font-style: italic;
+}
+
+table {
+  margin-left: auto;
+  margin-right: auto;
 }
 
 header h1 {
@@ -49,6 +59,7 @@ header h1 {
 nav {
   @include tabs ($background: $black, $color: $white);
   font-weight: bold;
+  font-size: small;
 }
 
 p {
@@ -56,7 +67,14 @@ p {
 }
 
 label {
+  text-align: center;
   display: block;
+}
+
+input {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 nav a.current {
