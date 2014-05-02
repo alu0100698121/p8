@@ -95,8 +95,7 @@ post '/save' do
     else 
       user = Usuario.first(:username => session[:name]) #buscamos el usuario.
        if !user 
- 	redirect to '/'
-  	user = Usuario.create(:username => session[:name])
+ 	user = Usuario.create(:username => session[:name])
        end
       
       pp user
