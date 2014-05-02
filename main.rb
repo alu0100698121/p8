@@ -84,7 +84,6 @@ end
 
 post '/save' do
   pp params
-  puts "ME CAGO EN LA PUTA"
   name = params[:fname]
   if session[:auth] # authenticated
     if settings.reserved_words.include? name  # check it on the client side
@@ -92,9 +91,9 @@ post '/save' do
         %Q{<div class="error">Can't save file with name '#{name}'.</div>}
       redirect back
     else 
-      user = Usuario.first(:username => session[:name]) #buscamos el usuario.
+      user = Usuario.first(:username => session[:email]) #buscamos el usuario.
        if !user 
- 	user = Usuario.create(:username => session[:name])
+ 	user = Usuario.create(:username => session[:email[0]])
        end
       
       pp user
