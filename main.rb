@@ -29,10 +29,10 @@ get '/:selected?' do |selected|
   puts "*************@auth*****************"
   puts session[:name]
   pp session[:auth]
-  programs = PL0Program.all
+  programs = Program.all
   pp programs
   puts "selected = #{selected}"
-  c  = PL0Program.first(:name => selected)
+  c  = Program.first(:name => selected)
   source = if c then c.source else "a = 3-2-1" end
   erb :index, 
       :locals => { :programs => programs, :source => source }
@@ -47,18 +47,28 @@ post '/save' do
         %Q{<div class="error">Can't save file with name '#{name}'.</div>}
       redirect back
     else 
-      c  = PL0Program.first(:name => name)
+      user = Usuario.first(:username => session[:name]) #buscamos el usuario.
+       if !user 
+ 	redirect to '/'
+  	user = Usuario.create(:username => session[:name])
+       end
+      
+      pp user
+      
+      c  = Program.first(:name => name) #Buscamos programa
       if c
         c.source = params["input"]
         c.save
       else
-        if PL0Program.all.size >= settings.max_files
-          c = PL0Program.all.sample
+        if Program.all.size >= settings.max_files
+          c = Program.all.sample
           c.destroy
         end
-        c = PL0Program.create(
+        c = Program.create(
           :name => params["fname"], 
           :source => params["input"])
+ 	user.pl0program << c  #añadimos el programa a usuario
+ 	user.save #guardamos el usuario
       end
       flash[:notice] = 
         %Q{<div class="success">File saved as #{c.name} by #{session[:name]}.</div>}
