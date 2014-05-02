@@ -25,58 +25,14 @@ get '/test' do
   erb :test
 end
 
-get '/' do
-   todos_usuarios = Usuario.all
-   programas = []
-   
-   source = "a = 3-2-1."
-   erb :index,:locals => { :programs => programas, :source => source, :user => todos_usuarios }
-   
-end
-
-get '/:usuario?' do usuario
-   var user =  Usuario.first(:username => usuario)
-   pp user
-   if(!user)
-     flash[:notice] = 
-        %Q{<div class="error">El usuario #{usuario} no está creado</div>}
-     redirect to '/'
-   end 
-   
-  programas = user.programs
-  source = ""
-
-  erb :index, :locals => { :programs => programas, :source => source, :user => user.username + '/' }
-end
-
-get '/:usuario?:/programa?' do |usuario,programa|
-   var user =  Usuario.first(:username => usuario)
-   pp user
-   if(!user)
-     flash[:notice] = 
-        %Q{<div class="error">El usuario #{usuario} no está creado</div>}
-     redirect to '/'
-   end 
-   
-   var program = user.programs.first(:name =>programa)
-   if(!program)
-	flash[:notice] = 
-        %Q{<div class="error">El programa #{programa} no está creado</div>}
-     redirect to '/'
-   end 
-   
-    erb :index, 
-      :locals => { :programs => user.programs, :source => program.source}
-end
-
 get '/:selected?' do |selected|
   puts "*************@auth*****************"
   puts session[:name]
   pp session[:auth]
-  programs = Program.all
+  programs = PL0Program.all
   pp programs
   puts "selected = #{selected}"
-  c  = Program.first(:name => selected)
+  c  = PL0Program.first(:name => selected)
   source = if c then c.source else "a = 3-2-1" end
   erb :index, 
       :locals => { :programs => programs, :source => source }
@@ -91,32 +47,23 @@ post '/save' do
         %Q{<div class="error">Can't save file with name '#{name}'.</div>}
       redirect back
     else 
-      user = Usuario.first(:username => session[:email[0]]) #buscamos el usuario.
-       if !user 
- 	user = Usuario.create(:username => session[:email[0]])
-       end
-      
-      pp user
-      
-      c  = user.programs.first(:name => name) #Buscamos programa
+      c  = PL0Program.first(:name => name)
       if c
         c.source = params["input"]
         c.save
       else
-        if user.programs.all.size >= settings.max_files
-          c = user.programs.all.sample
+        if PL0Program.all.size >= settings.max_files
+          c = PL0Program.all.sample
           c.destroy
         end
-        c = Program.create(
+        c = PL0Program.create(
           :name => params["fname"], 
           :source => params["input"])
- 	user.programs << c  #añadimos el programa a usuario
- 	user.save #guardamos el usuario
       end
       flash[:notice] = 
         %Q{<div class="success">File saved as #{c.name} by #{session[:name]}.</div>}
       pp c
-      redirect to '/'+user.username+'/'+name
+      redirect to '/'+name
     end
   else
     flash[:notice] = 
