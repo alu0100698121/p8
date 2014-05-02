@@ -119,7 +119,7 @@ post '/save' do
         %Q{<div class="success">File saved as #{c.name} by #{session[:name]}.</div>}
       pp c
       post user.username
-      redirect to '/'+ user.username +'/'+ name
+      redirect to '/'#+ user.username +'/'+ name
     end
   else
     flash[:notice] = 
