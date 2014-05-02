@@ -84,6 +84,7 @@ end
 
 post '/save' do
   pp params
+  puts "ME CAGO EN LA PUTA"
   name = params[:fname]
   if session[:auth] # authenticated
     if settings.reserved_words.include? name  # check it on the client side
