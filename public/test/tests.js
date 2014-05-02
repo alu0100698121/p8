@@ -1,6 +1,6 @@
 var assert = chai.assert;
 
-suite('Analizador de PL0 Ampliado Usando PEG.js', function() {
+suite('Análisis sintáctico', function() {
     	test('Probando Statement', function() {
 	   prueba = calculator.parse ("var a; a=2;.")
 	   assert.equal(prueba[0][1].left, "a")
@@ -10,9 +10,7 @@ suite('Analizador de PL0 Ampliado Usando PEG.js', function() {
 	
 	test('Probando constantes', function() {
 	    prueba = calculator.parse("const a=2; var t; t = 1*9+4;.")
-// 	    assert.equal(prueba[0][0][0].type, "CONST")
-// 	    assert.equal(prueba[0][0][0].left, "a")
-// 	    assert.equal(prueba[0][0][0].right, "2")
+
 	    assert.equal(prueba[0][0], "const")
 	});
 	
@@ -24,14 +22,7 @@ suite('Analizador de PL0 Ampliado Usando PEG.js', function() {
 	
 	test('Probando Procedure', function() {
 	    prueba = calculator.parse("var a; procedure tutu(d) BEGIN var h; h=12;END; a = 1*9+4;.")
-// 	    assert.equal(prueba[0][0][0].type, "PROCEDURE")
-// 	    assert.equal(prueba[0][0][0].id, "a")
-// 	    
-// 	    assert.equal(prueba[0][0][0].parameters[0].value, "0")
-// 	    	    
-// 	    assert.equal(prueba[0][0][0].block[0].type, "=")
-// 	    assert.equal(prueba[0][0][0].block[0].right, "12")
-// 	    assert.equal(prueba[0][0][0].block[0].left, "a")
+
 	    assert.equal(prueba[0][1][0].type, "PROCEDURE")
 	    assert.equal(prueba[0][1][0].id, "tutu")
 	    assert.equal(prueba[0][1][0].parameters[0].type, "PAR")
@@ -79,3 +70,38 @@ suite('Analizador de PL0 Ampliado Usando PEG.js', function() {
      }); 
       
 }); 
+
+suite('Análisis semántico', function() {
+	
+	test('Probando constantes', function() {
+	    prueba = calculator.parse("const a=2; var t; t = 1*9+4;.")
+
+	    assert.equal(prueba[1][0].nombre, "GLOBAL")
+	    assert.isNull(prueba[1][0].padre)
+	    assert.equal(prueba[1][0].contenido.a.type, "CONST")
+	    assert.equal(prueba[1][0].contenido.a.name, "a")
+	    assert.equal(prueba[1][0].contenido.a.value, "2")
+	});
+	
+	test('Probando variables', function() {
+	    prueba = calculator.parse("var a;a = 1*9+4;.")
+	    assert.equal(prueba[1][0].nombre, "GLOBAL")
+	    assert.isNull(prueba[1][0].padre)
+	    assert.equal(prueba[1][0].contenido.a.type, "VAR")
+	});
+	
+	test('Probando Procedure', function() {
+	    prueba = calculator.parse("var a; procedure tutu(d) BEGIN var h; h=12;END; a = 1*9+4;.")
+
+	    assert.equal(prueba[1][0].nombre, "GLOBAL")
+	    assert.isNull(prueba[1][0].padre)
+	    assert.equal(prueba[1][0].contenido.tutu.n_parametros, 1)
+	    assert.equal(prueba[1][0].contenido.tutu.nombre, "tutu")
+	    assert.equal(prueba[1][0].contenido.tutu.type, "Procedure")
+	    
+	    assert.equal(prueba[1][1].nombre, "tutu")
+	    assert.equal(prueba[1][1].padre, "GLOBAL")
+	    assert.equal(prueba[1][1].contenido.d.type, "PAR")
+	    assert.equal(prueba[1][1].contenido.h.type, "VAR")
+      });
+});
