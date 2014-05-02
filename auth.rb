@@ -6,7 +6,7 @@ require 'omniauth-facebook'
 use OmniAuth::Builder do
   config = YAML.load_file 'config/config.yml'
   provider :google_oauth2, config['identifier'], config['secret']
-  provider :twitter, 'CGprHO9zG3nEJNZxXjV79ZdnE', '5EMWLpTCbDuM2j3drpCfw8ZhhFCD7F6IjbSA5Fs2KPD1yaIt5v'
+  provider :twitter, 'aSmqMi3pt2TgrAc7Ap2mM7CEt', '0HnQWVrFLWSOt5FESRS455P4mxrtY4fb9cRAwM2K3ndu5DDPmu'
   provider :facebook, '1483847851830273', 'bed2424706ce88afc3b1d080f354cdfe'
 end
 
