@@ -7,7 +7,7 @@
   <nav>
   <ul>
     <% programs.sort.each do |p| %>
-      <li><a href="<%= p.name %>" <%=current?('/'+p.name)%>><%= p.name %></a></li>
+      <li><a href="/<%= p.name %>" <%=current?('/'+p.name)%>><%= p.name %></a></li>
     <% end %>
   </ul>
   </nav>
