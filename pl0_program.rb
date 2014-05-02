@@ -5,22 +5,25 @@ DataMapper.setup(:default,
 
 
 class Usuario
-  include DataMapper::Resource
-  
-  property :name, String, :key =>true
-  has n, :pl0program
+   include DataMapper::Resource
+   
+   property :id,     Serial
+   property :username, String, :key => true
+   has n, :programs
 end
 
-class PL0Program
+class Program
   include DataMapper::Resource
   
-  property :name, String, :key => true
+  property :id, Serial
+  property :name, String
   property :source, String, :length => 1..1024
   
-   belongs_to :usuario
+  belongs_to :usuario, :required => false
 end
 
 DataMapper.finalize
+DataMapper.auto_migrate!
 DataMapper.auto_upgrade!
 
 
