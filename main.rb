@@ -34,6 +34,20 @@ get '/' do
    
 end
 
+get '/:usuario?' do usuario
+   var user =  Usuario.first(:username => usuario)
+   pp user
+   if(!user)
+     flash[:notice] = 
+        %Q{<div class="error">El usuario #{usuario} no está creado</div>}
+     redirect to '/'
+   end 
+   
+  programas = user.programs
+  source = ""
+
+  erb :index, :locals => { :programs => programas, :source => source, :user => user.username + '/' }
+end
 
 get '/:usuario?:/programa?' do |usuario,programa|
    var user =  Usuario.first(:username => usuario)
