@@ -91,7 +91,7 @@ post '/save' do
         %Q{<div class="error">Can't save file with name '#{name}'.</div>}
       redirect back
     else 
-      user = Usuario.first(:username => session[:email]) #buscamos el usuario.
+      user = Usuario.first(:username => session[:email[0]]) #buscamos el usuario.
        if !user 
  	user = Usuario.create(:username => session[:email[0]])
        end
@@ -116,7 +116,7 @@ post '/save' do
       flash[:notice] = 
         %Q{<div class="success">File saved as #{c.name} by #{session[:name]}.</div>}
       pp c
-#       redirect to '/'+user.username+'/'+name
+      redirect to '/'+user.username+'/'+name
     end
   else
     flash[:notice] = 
