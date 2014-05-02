@@ -120,7 +120,7 @@ post '/save' do
       pp c
       flash[:notice] = 
         %Q{<div class="Salgo de save"</div>}
-      redirect to '/'+name
+      redirect to '/'#+name
     end
   else
     flash[:notice] = 
