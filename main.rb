@@ -25,6 +25,26 @@ get '/test' do
   erb :test
 end
 
+get '/:usuario?:/programa?' do |usuario,programa|
+   var user =  Usuario.first(:username => usuario)
+   pp user
+   if(!user)
+     flash[:notice] = 
+        %Q{<div class="error">El usuario #{usuario} no está creado</div>}
+     redirect to '/'
+   end 
+   
+   var program = user.programs.first(:name =>programa)
+   if(!program)
+	flash[:notice] = 
+        %Q{<div class="error">El programa #{programa} no está creado</div>}
+     redirect to '/'
+   end 
+   
+    erb :index, 
+      :locals => { :programs => user.programs, :source => program.source}
+end
+
 get '/:selected?' do |selected|
   puts "*************@auth*****************"
   puts session[:name]
@@ -55,19 +75,19 @@ post '/save' do
       
       pp user
       
-      c  = Program.first(:name => name) #Buscamos programa
+      c  = user.programs.first(:name => name) #Buscamos programa
       if c
         c.source = params["input"]
         c.save
       else
-        if Program.all.size >= settings.max_files
-          c = Program.all.sample
+        if user.programs.all.size >= settings.max_files
+          c = user.programs.all.sample
           c.destroy
         end
         c = Program.create(
           :name => params["fname"], 
           :source => params["input"])
- 	user.pl0program << c  #añadimos el programa a usuario
+ 	user.programs << c  #añadimos el programa a usuario
  	user.save #guardamos el usuario
       end
       flash[:notice] = 
